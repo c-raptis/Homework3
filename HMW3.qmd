@@ -1,0 +1,100 @@
+---
+title: "HMW3"
+format: html
+editor: visual
+---
+
+## Task 1: Control Flow Practice
+
+Code to read the data from hmw2
+
+```{r}
+
+load("hw2_list.rda")
+
+```
+
+**1** - Creating a new column status in each dataframe
+
+```{r}
+
+bp_list$treatment$status <- character(nrow(bp_list$treatment))
+bp_list$placebo$status <- character(nrow(bp_list$placebo))
+
+```
+
+**2** - I created the for loop and used the if/then/else logic to create the values inside the column status for the treatment data frame
+
+```{r}
+
+for (i in 1:nrow(bp_list$treatment)) {
+  if (bp_list$treatment$post_bp[i] <= 120) {
+    bp_list$treatment$status[i] <- "optimal"
+  } else if (bp_list$treatment$post_bp[i] > 120 && bp_list$treatment$post_bp[i] <= 130) {
+    bp_list$treatment$status[i] <- "borderline"
+  } else {
+    bp_list$treatment$status[i] <- "high"
+  }
+}
+
+```
+
+**3** - I created the for loop and used the if/then/else logic to create the values inside the column status for the placebo data frame
+
+```{r}
+
+for (i in 1:nrow(bp_list$placebo)) {
+  if (bp_list$placebo$post_bp[i] <= 120) {
+    bp_list$placebo$status[i] <- "optimal"
+  } else if (bp_list$placebo$post_bp[i] > 120 && bp_list$placebo$post_bp[i] <= 130) {
+    bp_list$placebo$status[i] <- "borderline"
+  } else {
+    bp_list$placebo$status[i] <- "high"
+  }
+}
+
+```
+
+## Task 2: Function Writing
+
+Here I'm just following the steps to create the function from the hmw. At the end I combined the result into a named vector to store all six values and then assigned meaningful names to each value in the vector.
+
+```{r}
+
+stats_function <- function(data_list, stat = "mean") {
+
+  my_fun <- get(stat)
+  
+  df_treatment <- data_list$treatment
+  df_placebo <- data_list$placebo
+  
+  pre_treatment <- my_fun(df_treatment$pre_bp)
+  post_treatment <- my_fun(df_treatment$post_bp)
+  diff_treatment <- my_fun(df_treatment$diff_bp)
+
+  pre_placebo <- my_fun(df_placebo$pre_bp)
+  post_placebo <- my_fun(df_placebo$post_bp)
+  diff_placebo <- my_fun(df_placebo$diff_bp)
+  
+  stats_result <- c(pre_treatment, post_treatment, diff_treatment, 
+              pre_placebo, post_placebo, diff_placebo)
+  
+  names(stats_result) <- c("pre_treatment", "post_treatment", "diff_treatment",
+                     "pre_placebo", "post_placebo", "diff_placebo")
+  
+  return(stats_result)
+}
+```
+
+Now using the function but not specifying the mean and specifying the variance, standard deviation, minimum and maximum. This will compute the values with how many dataframes we want.
+
+```{r}
+
+stats_mean <- stats_function(bp_list)
+
+stats_var <- stats_function(bp_list, "var")
+stats_sd <- stats_function(bp_list, "sd")
+stats_min <- stats_function(bp_list, "min")
+stats_max <- stats_function(bp_list, "max")
+
+```
